@@ -1,0 +1,114 @@
+\documentclass[catalan,parskip=half*,oneside,DIV=11,hidelinks]{scrreprt}
+
+% encoding
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{babel}
+
+% formatting and fixes
+\frenchspacing
+\usepackage[style=spanish]{csquotes}
+\MakeAutoQuote{«}{»}
+\usepackage{bookmark}
+\usepackage{scrhack}
+
+% ADD ANY SPECIFIC PACKAGES HERE
+% (CHEMISTRY, CODE, PUBLISHING)
+\usepackage{multicol}
+\usepackage{environ}
+\usepackage{enumitem}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\usepackage{tcolorbox}
+\usepackage{adjustbox}
+\usepackage{booktabs}
+\usepackage[figure]{hypcap}
+
+\usepackage{mathtools}
+\usepackage{commath}
+\usepackage{nicefrac}
+\usepackage{siunitx}
+
+\usepackage[american]{circuitikz}
+\usetikzlibrary{calc}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{automata}
+\usepackage{tikz-timing}
+\usepackage{minted}
+
+% hyperlink setup / metadata
+\usepackage{hyperref}
+\AfterPreamble{\hypersetup{
+  pdfauthor={Alba Méndez},
+  pdftitle={Memòria final DSBM},
+  pdfsubject={DSBM QT2018},
+  pdfcreator={}, pdfproducer={},
+  linkcolor={red!50!black},
+  citecolor={blue!50!black},
+  urlcolor={blue!80!black},
+  bookmarksopen=true,
+}}
+\setlength{\footskip}{2.0cm}
+
+% custom commands: BDF schematic and BSF symbol
+\newcommand{\nodenamebit}[1]{\text{#1}}
+\newcommand{\nodenamesingle}[2]{\text{#1}_{#2}}
+\newcommand{\nodenamerange}[3]{\text{#1}_{#2..#3}}
+
+% setup C listing appearance
+\definecolor{bg}{rgb}{0.95,0.95,0.95}
+\usemintedstyle{lovelace}
+\setminted{
+  breaklines, breakindent=1em, breakautoindent, bgcolor=bg, fontsize=\small,
+  % tabsize=4, breaklines=true, framesep=10pt, frame=leftline, breakindent=2em,
+}
+
+% custom commands: C function
+\newcommand{\fname}[1]{\mintinline{c}{#1}}
+
+% custom commands: LED pattern
+\newcommand{\ledpatternledwidth}{0.5em}
+\newcommand{\ledpattern}[4]{%
+\tikz[
+  baseline=-.3em, scale=.5,
+  LED/.style={line width=0.5pt, draw=black, minimum width=.01em, minimum height=.05em, fill=none}, LEDX/.style={LED},
+  LEDG/.style={LED}, LEDGX/.style={LEDX, fill=green},
+  LEDO/.style={LED}, LEDOX/.style={LEDX, fill=orange},
+  LEDR/.style={LED}, LEDRX/.style={LEDX, fill=red},
+  LEDB/.style={LED}, LEDBX/.style={LEDX, fill=blue},
+]{%
+  \path [LEDG#1] (-1em,0) ++(-\ledpatternledwidth/2, -\ledpatternledwidth/2) rectangle ++(\ledpatternledwidth, \ledpatternledwidth);
+  \path [LEDO#2] (0,+1em) ++(-\ledpatternledwidth/2, -\ledpatternledwidth/2) rectangle ++(\ledpatternledwidth, \ledpatternledwidth);
+  \path [LEDR#3] (+1em,0) ++(-\ledpatternledwidth/2, -\ledpatternledwidth/2) rectangle ++(\ledpatternledwidth, \ledpatternledwidth);
+  \path [LEDB#4] (0,-1em) ++(-\ledpatternledwidth/2, -\ledpatternledwidth/2) rectangle ++(\ledpatternledwidth, \ledpatternledwidth);
+}}
+
+% add PDF bookmark for index
+\let\myTOC\tableofcontents
+\renewcommand\tableofcontents{%
+  \pdfbookmark[1]{\contentsname}{}
+  \myTOC }
+
+
+
+\begin{document}
+
+\title{Memòria final DSBM}
+\date{5 d'octubre de 2018}
+\author{Alba Méndez}
+
+\maketitle
+
+\tableofcontents
+\clearpage
+
+
+\newcommand{\projectname}{}
+\newcommand{\inputproject}[1]{
+  \dumpaccum
+  \renewcommand{\projectname}{#1}
+  \input{../#1/main.tex}
+}
+%\inputproject{P1}
+
+\end{document}
