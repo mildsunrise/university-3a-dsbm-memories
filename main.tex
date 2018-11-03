@@ -63,6 +63,15 @@
   % tabsize=4, breaklines=true, framesep=10pt, frame=leftline, breakindent=2em,
 }
 
+% custom commands: optional and voluntary sections
+\newcommand{\opcional}{\paragraph{Apartat opcional.}}
+\newcommand{\voluntari}{\paragraph{Apartat voluntari.}}
+
+% custom commands: Git commit, filename
+\usepackage{xstring}
+\newcommand{\commit}[1]{commit \href{https://github.com/jmendeth/university-3a-dsbm-lab/commit/#1}{\texttt{\StrLeft{#1}{6}}}}
+\newcommand{\filename}[1]{\mintinline{text}{#1}} % TODO
+
 % custom commands: C function
 \newcommand{\fname}[1]{\mintinline{c}{#1}}
 
