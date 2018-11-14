@@ -9,8 +9,8 @@ p3-reading-initial
 p3-reading-tilt
 p3-dots-tilt
 p3-dots-initial
-p3-interrupt-initial
-p3-interrupt-use
+p4-interrupt-initial
+p4-interrupt-use
 c1-key-initial
 c1-key-star
 c1-key-d
