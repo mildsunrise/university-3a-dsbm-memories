@@ -1,0 +1,192 @@
+\chapter{\label{ch:p1} Pràctica P1 -- Introducció a Eclipse}
+
+\section{Objectius}
+
+En aquesta primera pràctica es vol familiaritzar l'estudiant amb la placa,
+l'estructura del projecte i el codi sobre el que es treballarà, l'us de l'entorn de
+desenvolupament basat en Eclipse, i també la metodologia general de les
+pràctiques.
+
+\section{Desenvolupament}
+
+
+\subsection{Verificació de la placa}
+
+Es comença explicant la necessitat i el procés de verificar la placa,
+i la diferència entre carregar codi a la RAM i fer-ho a la Flash. Com que
+el procés ve precarregat a la placa, s'enten que forma part del material i
+per tant no s'explicarà aquí.
+
+S'executen les diferents proves per comprovar que la placa es troba en bon estat.
+
+Llavors s'introdueix l'entorn de desenvolupament basat en Eclipse. Es donen
+les instruccions per començar-hi a treballar. Com que s'ha fet servir un entorn
+diferent pel desenvolupament (basat en Netbeans i en un altre sistema operatiu),
+no s'entrarà massa en detall.
+
+S'obre el Workspace a Eclipse. S'obre el fitxer \filename{main.c} a l'editor.
+Es compila el projecte i es verifica que s'ha generat el fitxer \filename{build/ch.elf}.
+
+
+\subsection{Càrrega del projecte a la RAM de la placa}
+
+El projecte exemple que es dona conté un codi a \filename{main.c} que només encen
+i apaga contínuament el LED verd de la placa.
+
+\begin{minted}{c}
+#include "Base.h"     // Basic definitions
+
+// Function that blinks the green LED
+
+void ledBlink(void) {
+    while (1) {
+        // Turn on the green LED using the BSRR register
+        (LEDS_PORT->BSRR.H.set) = BIT(GREEN_LED_PAD);
+
+        // Wait 200ms
+        SLEEP_MS(200);
+
+        // Turn off the green LED using the BSRR register
+        (LEDS_PORT->BSRR.H.clear) = BIT(GREEN_LED_PAD);
+
+        // Wait 200ms
+        SLEEP_MS(200);
+    }
+}
+
+int main(void) {
+    // Basic initializations
+    baseInit();
+
+    // Call the LED blink function
+    // This function never returns
+    ledBlink();
+
+    // Return so that the compiler doesn't complain
+    // It is not really needed as ledBlink never returns
+    return 0;
+}
+\end{minted}
+\vskip -1em
+
+En primer lloc s'explica com carregar
+el codi compilat a la RAM de la placa. Hem d'iniciar OpenOCD al menú d'aplicacions
+externes, i un cop aquest hagi establert la connexió amb la placa, es carrega el codi
+seleccionant la opció \textsf{Practica (RAM Load and Run)} del menú de debug.
+
+Un cop el codi s'ha carregat, s'obre una sessió de depuració. El codi es troba parat sobre
+la primera instrucció del programa (a la funció \fname{main}), i podem reprendre l'execució
+fent clic al botó \textsf{Resume} del depurador. Ara el LED verd hauria d'encendre's i apagar-se
+continuament. Es demana que parem el programa (i la sessió de depuració) fent clic a \textsf{Terminate}.
+
+
+\subsection{Depuració del projecte}
+
+Es continua explicant el funcionament del depurador, es demana que es carregui de nou
+el codi i en lloc de polsar \textsf{Resume}, es faci servir \textsf{Step Into}, \textsf{Step Over}, etc.
+per familiaritzar-se amb el fluxe d'execució.
+
+A continuació s'explica com veure el contingut
+de les variables i posar breakpoints. A mode d'exemple, es proposa afegir una variable global
+\mintinline{c}|volatile uint32_t i=0;| i incrementar-la dins del bucle. Llavors, posar-li un
+breakpoint i veure com s'interromp el flux d'execució en cada iteració / cicle del LED.
+També observar el valor de la variable.
+
+\textbf{Nota:} No es va aconseguir que funcionés la vista de variables globals, sempre que
+s'afegia la variable aquesta sortia sense valor assignat. De tota forma, sí es podia afegir
+un \emph{watch} amb el nom de la variable i d'aquesta forma veure el seu valor.
+
+
+\subsection{Descripció del funcionament del programa}
+
+En aquest apartat s'explica la funció de cadascun dels fitxers del projecte. S'expliquen les variables
+del \filename{Makefile}, en concret la variable \mintinline{text}|PCSRC|, que especifica la llista
+de fitxers de codi font a compilar i incloure a l'executable final.
+
+També s'explica la funció de \filename{mcuconf.h}, \filename{halconf.h} i \filename{chconf.h},
+que especifiquen la configuració del sistema operatiu, tant opcions generals com ajustos concrets
+per al microcontrolador que fem servir (STM32F407).
+
+S'explica la funció de \filename{Base.c} i \filename{Base.h}, els macros i les utilitats que contenen,
+entre ells cal destacar \mintinline{c}|SLEEP_MS(x)| i \mintinline{c}|DELAY_US(x)|, que bloquegen
+l'execució durant un nombre de mil·lisegons o microsegons, i \mintinline{c}|BIT(x)| i les constants
+\mintinline{c}|BITx|, que evaluen a un nombre amb el bit indicat actiu i la resta a zero.
+
+S'explica la funció de \filename{labBoard12.h}, que conté la descripció del hardware de la placa,
+com per exemple els ports i els pins on estan connectats diferents perifèrics, entre ells els LEDs.
+
+S'explica per sobre l'estructura del codi de \filename{main.c} i l'estructura de les línies GPIO
+i com s'accedeixen.
+
+
+\subsection{Modificació del programa}
+
+Ara es demana, com a exercici bàsic, que es modifiqui \filename{main.c} per afegir una nova funció
+\fname{ledSequence} que encengui els LEDs seguint la seqüència següent de manera repetiva, deixant
+\SI{0.5}{\second} entre estat i estat:
+
+\begin{center}
+\ledpattern{X}{ }{ }{ } $\rightarrow$
+\ledpattern{ }{X}{ }{ } $\rightarrow$
+\ledpattern{ }{ }{X}{ } $\rightarrow$
+\ledpattern{ }{ }{ }{X}
+\end{center}
+
+La funció s'implementa com segueix:
+
+\begin{minted}{c}
+#define TURN_ON(bits) (LEDS_PORT->BSRR.H.set) = (bits);
+#define TURN_OFF(bits) (LEDS_PORT->BSRR.H.clear) = (bits);
+#define TURN_ON_DURING(time, bits) \
+        TURN_ON(bits); SLEEP_MS(time); TURN_OFF(bits);
+
+void ledSequence(void) {
+    while (1) {
+        TURN_ON_DURING(500, GREEN_LED_BIT);
+        TURN_ON_DURING(500, ORANGE_LED_BIT);
+        TURN_ON_DURING(500, RED_LED_BIT);
+        TURN_ON_DURING(500, BLUE_LED_BIT);
+    }
+}
+\end{minted}
+\vskip -1em
+
+Llavors es crida des de \fname{main}:
+
+\begin{minted}{diff}
+     // Call the LED blink function
+     // This function never returns
+-    ledBlink();
++    //ledBlink();
++
++    // Call the LED sequence function
++    // This function never returns
++    ledSequence();
+ 
+     // Return so that the compiler doesn't complain
+\end{minted}
+\vskip -1em
+
+El programa es carrega a la placa i es comprova que té el funcionament esperat.
+
+
+\subsection{Eines addicionals de depuració}
+
+Per últim s'expliquen altres eines com ara: la finestra de ChibiOS/RT i la informació que ens proporciona,
+la pestanya de memòria, com canviar de consola i la finestra \textsf{EmbSys Registers} que ens permet
+veure i modificar l'estat dels registres del microcontrolador i com configurar-la.
+
+
+\subsection{Stack Frames}
+
+També s'explica què són els \emph{stack frames} i la informació que donen quan estem depurant.
+
+
+\section{Conclusió}
+
+La pràctica s'ha realitzat sense problema, excepte per la part de veure les variables.
+
+\section{Ajustaments posteriors}
+
+Cap canvi a destacar.
+

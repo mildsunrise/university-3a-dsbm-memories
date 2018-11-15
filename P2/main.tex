@@ -230,7 +230,7 @@ pot veure la placa amb el backlight encès.
 \end{figure}
 
 
-\subsection{Inicialització del display}
+\subsection{\label{sub:p2-init} Inicialització del display}
 
 En aquest pas s'explica la seqüència d'inicialització que cal dur a terme a l'LCD.
 Com que l'LCD arrenca en mode 8~bits, cal fer una seqüència d'inicialització
@@ -315,7 +315,7 @@ El programa es carrega a la placa i s'obté el funcionament esperat (figura~\ref
   \caption{ \label{fig:p2-board-init} La placa just després d'inicialitzar el LCD. }
 \end{figure}
 
-Més endavant, en la pràctica P4 es mesurarà i verificarà (pàgina~231) % TODO: link to P4
+Més endavant, en la pràctica P4 es mesurarà i verificarà (pàgina~\pageref{sub:p4-lcd})
 que les escritures i el procés d'inicialització en general es fa bé.
 
 
@@ -636,7 +636,7 @@ i la resta ja tenen els valors correctes. Així, el port passa d'un estat d'alta
 \vskip -1em
 
 També, com a part de la pràctica P4, s'ha arreglat un bug important en la inicialització
-de l'LCD. Això s'explica a la pàgina~123. % TODO: link to p4
+de l'LCD. Això s'explica a la pàgina~\pageref{sub:p4-lcd}.
 Aquests dos canvis conformen el \commit{d6babe86f524c875e7b5d9e93cf336c434c1b18c}.
 
 Finalment, al \commit{ba419fc4317c5d8490daaeb8bcc1e137ea5c94cf} s'ha arreglat la definició
