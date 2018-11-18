@@ -601,7 +601,8 @@ void GPIO_ModePushPull(GPIO_TypeDef *port, int32_t line) {
 \end{minted}
 \vskip -1em
 
-Això és el \commit{da6142aab1f1cf2a6bafaa3d98a55262c5f985bb}.
+També s'afegeix l'ordre \mintinline{c}|line &= 0xF;| al principi, que assegura que \mintinline{c}|line|
+estigui entre 0 i 15 (per seguretat). Tot això és el \commit{da6142aab1f1cf2a6bafaa3d98a55262c5f985bb}.
 
 També s'ha canviat l'ordre
 en que es manipulen els registres, de forma que MODER es configuri al final, quan ODR
