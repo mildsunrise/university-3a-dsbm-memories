@@ -1,0 +1,224 @@
+\chapter{\label{ch:r1} Pràctica R1 -- Introducció a ChibiOS/RT}
+
+\section{Objectius}
+
+En l'entorn de desenvolupament que se'ns dona ja fet, el codi es compila amb
+ChibiOS/RT, un RTOS. Tot i que fins ara es podria dir que no n'hem
+fet us, en aquesta pràctica s'explicarà la necessitat i els beneficis de fer-lo
+servir, el funcionament dels fils o processos, i el de la capa d'abstracció del
+hardware.
+
+Finalment, es faran petits programes per fer us dels fils.
+
+\section{Desenvolupament}
+
+
+\subsection{ChibiOS/RT}
+
+Es comença explicant què és un sistema operatiu, la necessitat de fer-ne servir un quan
+l'aplicació que programem comença a ser més complexa, i la comoditat que ens dona des del
+punt de vista de la programació els processos/fils.
+
+També s'explica què és la capa d'abstracció del hardware, que de vegades pot venir inclosa
+en el sistema operatiu, i els beneficis de fer-la servir (portabilitat, protegir l'accés
+concurrent al hardware).
+
+Llavors s'entra concretament en els sistemes operatius en temps real (RTOS, el nostre cas).
+S'explica què és el requeriment de temps real que pot tenir un sistema, i per què necessitem
+un RTOS per complir-lo, i no qualsevol tipus de sistema operatiu.
+
+S'introdueix llavors ChibiOS/RT, un RTOS de codi obert amb que es compila el nostre codi en
+l'entorn de desenvolupament donat. S'explica que fins la versió que fem servir té integrat
+el HAL dins el sistema operatiu, es detallen la resta de parts (kernel, port) i la funció
+de cadascuna.
+
+\subsection{Processos}
+
+S'explica què és l'\emph{scheduler} del kernel, que la seva funció és repartir el temps entre
+processos, i la política que fa servir: es basa en prioritat i \emph{round robin} dins una
+mateixa prioritat. S'explica què és el tic de scheduler, què és el \emph{time quantum} i quant
+valen per defecte. També es recalca el cost de fer un canvi de context.
+
+Llavors s'explica què hi ha en la memòria que reservem per a un procés abans de crear-lo;
+la seva pila (\emph{stack}), informació de context i informació del procés que fa servir el
+SO per identificar-lo.
+
+\subsection{Exemple de codi}
+
+En primer lloc es demana importar al projecte els fitxers \filename{process.c} i \filename{process.h}
+i incloure el primer al \filename{Makefile}. Això es fa al \commit{99b853f483a6605d7cde3d9ae6dfabf453bb6a74}.
+
+Ara treballarem amb la funció \fname{test2threads}, que implementa un exemple senzill amb dos processos.
+El procés principal crea un procés fill i llavors fa pampallugues al LED blau~\ledpattern{ }{ }{ }{X}
+per indicar que està corrent. El procés fill, que té la mateixa prioritat que el principal,
+per la seva banda fa pampallugues amb el LED taronja~\ledpattern{ }{X}{ }{ } un cop engegat:
+
+\begin{minted}{c}
+// Working area for the child thread
+static WORKING_AREA(waChild, 128);
+
+// Function prototype for the child thread
+// Needed because thChild is referenced before its definition
+// It is not included in process.h because it's a static function
+static msg_t thChild(void *arg);
+
+// Test for simple two thread operation
+// This function:
+//     - Initializes the system
+//     - Creates a child thread that blinks the orange LED
+//     - Blinks the blue LED
+
+void test2threads(void) {
+    // Basic system initialization
+    baseInit();
+
+    // Child thread creation
+    chThdCreateStatic(waChild, sizeof (waChild), NORMALPRIO, thChild, NULL);
+
+    while (TRUE) {
+        // Turn on blue LED using BSRR
+        (LEDS_PORT->BSRR.H.set) = BLUE_LED_BIT;
+
+        // Pause
+        busyWait(3);
+
+        // Turn off blue LED using BSRR
+        (LEDS_PORT->BSRR.H.clear) = BLUE_LED_BIT;
+
+        // Pausa
+        busyWait(3);
+    }
+}
+
+
+// Child thread that bliks the orange LED
+
+static msg_t thChild(void *arg) {
+    while (TRUE) {
+        // Turn on orange LED using BSRR
+        (LEDS_PORT->BSRR.H.set) = ORANGE_LED_BIT;
+
+        // Pausa
+        busyWait(5);
+
+        // Turn off orange LED using BSRR
+        (LEDS_PORT->BSRR.H.clear) = ORANGE_LED_BIT;
+
+        // Pausa
+        busyWait(5);
+    }
+    return 0;
+}
+
+// Busy waits in a thread doing some operations
+// The greater n, the longer the wait
+
+void busyWait(uint32_t n) {
+    uint32_t i;
+    volatile uint32_t x = 0;
+    for (i = 0; i < n * 1000000; i++)
+        x = (x + 2) / 3;
+}
+\end{minted}
+\vskip -1em
+
+S'explica en profunditat cada part del codi, i es demana que cridem a la funció \fname{test2threads}
+des de \fname{main}. Es comprova que tots dos processos, al tenir la mateixa prioritat, corren alhora
+(intercanviant-se cada \emph{quantum}).
+
+Ara es demana que canviem la prioritat del procés fill, de \mintinline{c}|NORMALPRIO| a
+\mintinline{c}|NORMALPRIO+1|, passant a tenir prioritat superior al procés principal.
+Per tal de mantenir el codi net i reproduïble, es fa una còpia de la funció que anomenem
+\fname{test2threadsPlus1} i fem allà el canvi. La cridem des de \fname{main}, carreguem el
+programa a la placa i verifiquem que, tal i com s'espera, només corre el procés fill ja que
+és el que té més prioritat. Per tant només fa pampallugues el LED taronja.
+
+També es demana que canviem la prioritat a \mintinline{c}|NORMALPRIO-1|.
+Anomenem la nova funció, \fname{test2threadsMinus1}. La carreguem i efectivament,
+ara només s'executa el procés principal ja que és el de més prioritat, i per tant
+només fa pampallugues el LED blau.
+
+A continuació s'exposa la mala pràctica de fer treballar la CPU en estats d'espera,
+i és proposa que canviem les crides a \mintinline{c}|busyWait(3)| per crides a \mintinline{c}|SLEEP_MS(300)|,
+i de forma similar amb \mintinline{c}|busyWait(5)|. Això permet que altres processos
+facin servir la CPU mentre el procés actual espera.
+
+De nou fem una còpia amb els canvis de dalt, i creant el fill amb
+prioritat \mintinline{c}|NORMALPRIO+1|. Anomenem la funció \fname{test2threadsSleep},
+la pugem i comprovem que efectivament, encara que el fill té més prioritat que el pare,
+quan el primer entra en espera el segon s'executa i per tant tots dos LEDs fan
+pampallugues alhora.
+
+El que hem vist és una forma d'un procés per bloquejar-se a sí mateix durant un periode
+de temps. S'expliquen altres formes de bloquejar-se, com ara esperar a una interrupció,
+a que un element d'us comú quedi lliure, o a que un altre procés acabi.
+
+Per últim, es demana ampliar el programa per tal de tenir 4 processos totals, cadascun
+fent pampallugues en un dels quatre LEDs i amb diferents esperes.
+
+\opcional
+Per simplificar el codi, farem una única funció genèrica que agafi uns paràmetres (bit del LED
+a controlar, i temps d'espera) i implementi el bucle infinit per fer pampallugues. S'engegen tres
+fils amb aquesta funció i diferents paràmetres, i al fil principal simplement es crida
+amb altres paràmetres.
+
+De nou, per mantenir el codi net farem el programa independent de la resta. El codi
+implementat (estudi previ) és:
+
+%previ
+\begin{minted}{c}
+// Input parameters struct for the thread function
+typedef struct { uint32_t bits; int32_t sleepTime; } FourThreadsChildParams;
+
+// Thread function
+static msg_t fourThreadsChild(void *arg) {
+    FourThreadsChildParams *params = (FourThreadsChildParams*) arg;
+    while (1) {
+        LEDS_PORT->BSRR.H.set = params->bits;
+        SLEEP_MS(params->sleepTime);
+        LEDS_PORT->BSRR.H.clear = params->bits;
+        SLEEP_MS(params->sleepTime);
+    }
+    return 0;
+}
+
+// Main program
+void fourThreadsTest(void) {
+    // Allocate working space for each child thread
+    static struct { WORKING_AREA(wa, 128); } children [3];
+
+    // Define parameters for each thread
+    FourThreadsChildParams params [] = {
+        { BLUE_LED_BIT, 300 },
+        { ORANGE_LED_BIT, 500 },
+        { GREEN_LED_BIT, 400 },
+        { RED_LED_BIT, 700 },
+    };
+
+    // Start child threads
+    int32_t i;
+    for (i = 0; i < 3; i++)
+        chThdCreateStatic(children[i].wa, sizeof(children[i].wa), NORMALPRIO, fourThreadsChild, &params[i+1]);
+
+    // Start main thread's routine
+    fourThreadsChild(&params[0]);
+}
+\end{minted}
+\vskip -1em
+%/previ
+
+El codi s'inserta a \filename{main.c}, es crida des de \fname{main}, es carrega a la placa
+i es comprova el funcionament esperat (tots els processos corrent alhora, tots els LEDs fent
+pampallugues amb diferents esperes). Tots aquests programes conformen
+el \commit{d84e6148aa3ea8623b9c51ef6ced18b39583bfd8}.
+
+
+\section{Conclusió}
+
+Cap problema rellevant. Considero que s'ha fet un bon treball explicant tots els conceptes
+necessaris i el programa demanat al final dona una bona iniciació als fils.
+
+\section{Ajustaments posteriors}
+
+Cap canvi a destacar.
+% TODO
