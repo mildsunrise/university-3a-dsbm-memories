@@ -602,7 +602,30 @@ void GPIO_ModePushPull(GPIO_TypeDef *port, int32_t line) {
 \vskip -1em
 
 També s'afegeix l'ordre \mintinline{c}|line &= 0xF;| al principi, que assegura que \mintinline{c}|line|
-estigui entre 0 i 15 (per seguretat). Tot això és el \commit{da6142aab1f1cf2a6bafaa3d98a55262c5f985bb}.
+estigui entre 0 i 15 (per seguretat).
+
+I per acabar, s'han afegit checks de seguretat a \fname{LCD_GotoXY} per comprovar que
+\mintinline{c}|row| es 0 o 1, i que \mintinline{c}|col| està entre 0 i 39. És cert
+que el nostre LCD només té 16~columnes, però la memòria de la que disposa el driver
+arriba fins a 40 columnes, i en casos més complexos on es faci us del \emph{display
+shift} pot ser interessant escriure en aquestes posicions, encara que en principi siguin
+invisibles.
+
+\begin{minted}{c}
+void LCD_GotoXY(int32_t col, int32_t row) {
+    // Restrict coordinates for safety
+    if (row < 0 || row >= 2) row = 0;
+    if (col < 0 || col >= 40) col = 0;
+
+    // Send command and wait
+    uint32_t address = row * 0x40 + col;
+    lcdValue(0b10000000 | (address & 0b1111111), 0);
+    DELAY_US(40);
+}
+\end{minted}
+\vskip -1em
+
+Tot això és el \commit{da6142aab1f1cf2a6bafaa3d98a55262c5f985bb}.
 
 També s'ha canviat l'ordre
 en que es manipulen els registres, de forma que MODER es configuri al final, quan ODR
