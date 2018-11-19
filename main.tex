@@ -47,6 +47,10 @@
   citecolor={blue!50!black},
   urlcolor={blue!80!black},
   bookmarksopen=true,
+  pdfpagelayout=OneColumn,
+  pdfnewwindow=true,
+  pdfstartview=XYZ,
+  plainpages=false,
 }}
 \setlength{\footskip}{2.0cm}
 
@@ -70,7 +74,7 @@
 % custom commands: Git commit, filename
 \usepackage{xstring}
 \newcommand{\commit}[1]{\href{https://github.com/jmendeth/university-3a-dsbm-lab/commit/#1}{commit \texttt{\StrLeft{#1}{6}}}}
-\newcommand{\filename}[1]{\mintinline{text}{#1}} % TODO
+\newcommand{\filename}[1]{\mintinline{text}{#1}} % FIXME
 
 % custom commands: C function
 \newcommand{\fname}[1]{\mintinline{c}{#1}}
@@ -127,8 +131,11 @@ pràctiques per part de l'estudiant, així com l'assoliment dels objectius espec
 altra nota que es cregui convenient.
 
 S'assumeix que el lector ja està familiaritzat amb el funcionament, perifèrics i especificacions
-de la placa que s'empra en el laboratori. S'assumeix també un bon coneixement de l'assignatura.
-\textbf{No és necessari} conèixer prèviament el desenvolupament del laboratori per llegir aquesta
+de la placa que s'empra en el laboratori i del microcontrolador que fa servir (STM32F407).
+S'assumeix també un bon coneixement de l'assignatura, de ChibiOS/RT (el sistema operatiu;
+només es fa servir en la part~\ref{part:p-r}) i de RTOS en general.
+\textbf{No és necessari} haver llegit el manual de pràctiques ni coneixer els objectius i el
+desenvolupament del laboratori per llegir aquesta
 memòria; tot i així, de no tenir-lo es recomana llegir cada pràctica en ordre a causa de la natura
 incremental d'aquestes.
 
