@@ -117,15 +117,11 @@ i al \filename{Makefile} (\commit{d2112bd509d9b36321cbb87de7697d559c0c7574}).
 Llavors s'emplena el codi de \fname{interruptTest} i la RSI (\commit{53daa581b56659b2596128b825fc38650af53958}).
 
 \begin{figure}[p] %FIXME: subfigures?
-  \begin{center}
-    \includegraphics[width=.82\columnwidth]{../photos/board/p4-interrupt-initial}
-  \end{center}
+  \includegraphics[width=.82\columnwidth]{../photos/board/p4-interrupt-initial}
   \caption{ \label{fig:p4-board-initial} La placa executant la prova d'interrupció, en l'estat inicial. }
 \end{figure}
 \begin{figure}[p]
-  \begin{center}
-    \includegraphics[width=.82\columnwidth]{../photos/board/p4-interrupt-use}
-  \end{center}
+  \includegraphics[width=.82\columnwidth]{../photos/board/p4-interrupt-use}
   \caption{ \label{fig:p4-board-use} La placa executant la prova d'interrupció, després de prémer el polsador. }
 \end{figure}
 
@@ -145,9 +141,7 @@ En la figura~\ref{fig:p4-analyzer-latency} es pot veure que la latència d'inter
 \SI{275}{\nano\second}.
 
 \begin{figure}
-  \begin{center}
-    \includegraphics[width=1\columnwidth]{../photos/analyzer/interrupt-latency}
-  \end{center}
+  \includegraphics[width=.99\columnwidth]{../photos/analyzer/interrupt-latency}
   \caption{ \label{fig:p4-analyzer-latency} Captura mostrant la latència aproximada d'interrupció. }
 \end{figure}
 
@@ -161,16 +155,12 @@ i també mirar que el valor de la línia \textsf{MOSI} representa una petició d
 del registre d'acceleració Y.
 
 \begin{figure}
-  \begin{center}
-    \includegraphics[width=0.8\columnwidth]{../\projectname/timing-accel-spi}
-  \end{center}
+  \includegraphics[width=0.8\columnwidth]{../\projectname/timing-accel-spi}
   \caption{ \label{fig:p4-timing-accel} Cronograma d'una transferència SPI a l'acceleròmetre. }
 \end{figure}
 
 \begin{figure}
-  \begin{center}
-    \includegraphics[width=0.85\columnwidth]{../\projectname/timing-accel-spi-specs}
-  \end{center}
+  \includegraphics[width=0.85\columnwidth]{../\projectname/timing-accel-spi-specs}
   \caption{ \label{fig:p4-timing-accel-specs} Requeriments temporals per a una trasferència SPI a l'acceleròmetre. }
 \end{figure}
 
@@ -180,9 +170,7 @@ El resultat es pot veure a la figura~\ref{fig:p4-analyzer-overview}.
 Comprovem que es compleix el protocol esperat.
 
 \begin{figure}
-  \begin{center}
-    \includegraphics[width=1\columnwidth]{../photos/analyzer/interrupt-overview}
-  \end{center}
+  \includegraphics[width=.99\linewidth]{../photos/analyzer/interrupt-overview}
   \caption{ \label{fig:p4-analyzer-overview} Captura mostrant una lectura sencera de l'acceleròmetre des de que es prem el polsador d'usuari. }
 \end{figure}
 
@@ -193,16 +181,12 @@ es poden veure de més a prop les dues transferències SPI que comporten la lect
 A la figura~\ref{fig:p4-analyzer-cmd} es visualitza només una d'elles.
 
 \begin{figure}
-  \begin{center}
-    \includegraphics[width=1\columnwidth]{../photos/analyzer/interrupt-accel}
-  \end{center}
+  \includegraphics[width=.99\columnwidth]{../photos/analyzer/interrupt-accel}
   \caption{ \label{fig:p4-analyzer-transfers} Captura mostrant les dues transferències SPI que conformen una lectura a l'acceleròmetre. }
 \end{figure}
 
 \begin{figure}
-  \begin{center}
-    \includegraphics[width=1\columnwidth]{../photos/analyzer/interrupt-accel-cmd}
-  \end{center}
+  \includegraphics[width=.99\columnwidth]{../photos/analyzer/interrupt-accel-cmd}
   \caption{ \label{fig:p4-analyzer-cmd} Captura mostrant una transferència SPI cap a l'acceleròmetre on es fa una petició de lectura del registre de l'eix Y. }
 \end{figure}
 
@@ -238,9 +222,7 @@ figura~\ref{fig:p2-timing-write}, pàgina~\pageref{fig:p2-timing-write}) es comp
 especificacions del \emph{datasheet} (figura~\ref{fig:p4-timing-lcd-specs})).
 
 \begin{figure}
-  \begin{center}
-    \includegraphics[width=0.85\columnwidth]{../\projectname/timing-lcd-specs}
-  \end{center}
+  \includegraphics[width=0.85\columnwidth]{../\projectname/timing-lcd-specs}
   \caption{ \label{fig:p4-timing-lcd-specs} Requeriments temporals per a una escritura a l'LCD. }
 \end{figure}
 
@@ -250,9 +232,7 @@ Configurem l'analitzador lògic adequadament, i fem la captura d'una transferèn
 veure en la figura~\ref{fig:p4-analyzer-lcd-write}.
 
 \begin{figure}
-  \begin{center}
-    \includegraphics[width=1\columnwidth]{../photos/analyzer/lcd-write}
-  \end{center}
+  \includegraphics[width=.99\columnwidth]{../photos/analyzer/lcd-write}
   \caption{ \label{fig:p4-analyzer-lcd-write} Captura mostrant una única transferència d'escriptura cap a l'LCD. }
 \end{figure}
 
@@ -284,9 +264,7 @@ d'una petita espera i la resta de comandes d'inicialització. Un cop fet el prot
 el codi espera \SI{5}{\milli\second} i fa 4 comandes (8 escriptures) per escriure OK a l'LCD.
 
 \begin{figure}
-  \begin{center}
-    \includegraphics[width=1\columnwidth]{../photos/analyzer/lcd-init-full-1}
-  \end{center}
+  \includegraphics[width=.99\columnwidth]{../photos/analyzer/lcd-init-full-1}
   \caption{ \label{fig:p4-analyzer-lcd-init} Captura mostrant el procés d'inicialització de l'LCD sencer. }
 \end{figure}
 
@@ -295,9 +273,7 @@ on es fan escritures, és a dir, des de quan s'envia el primer 0011 (després d'
 que s'acaba d'escriure OK. La captura es pot veure a la figura~\ref{fig:p4-analyzer-lcd-protocol}.
 
 \begin{figure}
-  \begin{center}
-    \includegraphics[width=1\columnwidth]{../photos/analyzer/lcd-init-z1}
-  \end{center}
+  \includegraphics[width=.99\columnwidth]{../photos/analyzer/lcd-init-z1}
   \caption{ \label{fig:p4-analyzer-lcd-protocol} Captura mostrant les escritures d'inicialització de l'LCD. }
 \end{figure}
 
@@ -307,9 +283,7 @@ la captura per veure concretament les escriptures que demana la \emph{datasheet}
 (figura de la pàg.~\pageref{fig:p2-init-protocol}).
 
 \begin{figure}
-  \begin{center}
-    \includegraphics[width=1\columnwidth]{../photos/analyzer/lcd-init-z2}
-  \end{center}
+  \includegraphics[width=.99\columnwidth]{../photos/analyzer/lcd-init-z2}
   \caption{ \label{fig:p4-analyzer-lcd-protocol-zoom} Captura mostrant les últimes escritures del protocol d'inicialització de l'LCD. }
 \end{figure}
 

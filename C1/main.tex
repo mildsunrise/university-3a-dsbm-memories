@@ -109,8 +109,9 @@ Si no s'ha detectat cap tecla preumda, es retornarà un codi especial.
 Els codis s'assignaran com es detalla a continuació:
 
 \begin{multicols}{2}
+\centering
 
-\begin{center} \begin{tabular}{cc}
+\begin{tabular}{cc}
 \toprule
 Codi & Tecla \\ \midrule
 0 & \texttt{1} \\
@@ -122,9 +123,9 @@ Codi & Tecla \\ \midrule
 6 & \texttt{6} \\
 7 & \texttt{B} \\
 \bottomrule
-\end{tabular} \end{center}
+\end{tabular}
 
-\begin{center} \begin{tabular}{cc}
+\begin{tabular}{cc}
 \toprule
 Codi & Tecla \\ \midrule
 8 & \texttt{7} \\
@@ -137,7 +138,7 @@ Codi & Tecla \\ \midrule
 15 & \texttt{D} \\
 32 & (cap) \\
 \bottomrule
-\end{tabular} \end{center}
+\end{tabular}
 
 \end{multicols}
 
@@ -249,22 +250,16 @@ el seu correcte funcionament. A la figura~\ref{fig:c1-board-key-star} es pot veu
 pantalla quan es prem la tecla \texttt{*}, a la figura~\ref{fig:c1-board-key-d} quan es prem \texttt{D}, i a la figura~\ref{fig:c1-board-key-initial} quan no s'està prement cap tecla.
 
 \begin{figure}
-  \begin{center}
-    \includegraphics[width=1\columnwidth]{../photos/board/c1-key-star}
-  \end{center}
+  \includegraphics[width=.99\columnwidth]{../photos/board/c1-key-star}
   \caption{ \label{fig:c1-board-key-star} La placa executant la prova d'exploració del teclat, prement la tecla \texttt{*}. }
 \end{figure}
 
 \begin{figure}[p] %FIXME: subfigures?
-  \begin{center}
-    \includegraphics[width=.82\columnwidth]{../photos/board/c1-key-d}
-  \end{center}
+  \includegraphics[width=.82\columnwidth]{../photos/board/c1-key-d}
   \caption{ \label{fig:c1-board-key-d} La placa executant la prova d'exploració del teclat, prement la tecla \texttt{D}. }
 \end{figure}
 \begin{figure}[p]
-  \begin{center}
-    \includegraphics[width=.82\columnwidth]{../photos/board/c1-key-initial}
-  \end{center}
+  \includegraphics[width=.82\columnwidth]{../photos/board/c1-key-initial}
   \caption{ \label{fig:c1-board-key-initial} La placa executant la prova d'exploració del teclat, sense cap tecla premuda. }
 \end{figure}
 
@@ -386,15 +381,11 @@ i podem veure com també es detecta la falsa pulsació de la tecla \texttt{6}, i
 així ho reporta.
 
 \begin{figure}[p] %FIXME: subfigures?
-  \begin{center}
-    \includegraphics[width=.82\columnwidth]{../photos/board/c1-keys-two}
-  \end{center}
+  \includegraphics[width=.82\columnwidth]{../photos/board/c1-keys-two}
   \caption{ \label{fig:c1-board-keys-two} La placa detectant la pulsació simultània de les tecles \texttt{7} i \texttt{*}. }
 \end{figure}
 \begin{figure}[p]
-  \begin{center}
-    \includegraphics[width=.82\columnwidth]{../photos/board/c1-keys-error_2}
-  \end{center}
+  \includegraphics[width=.82\columnwidth]{../photos/board/c1-keys-error_2}
   \caption{ \label{fig:c1-board-keys-error} La placa detectant la pulsació simultània de les tecles \texttt{4}, \texttt{*} i \texttt{\#}. }
 \end{figure}
 
@@ -519,9 +510,7 @@ Es crida des de \fname{main}, es carrega a la placa i es comprova el correcte fu
 d'aquest (figura~\ref{fig:c1-board-intr}). Això conforma el \commit{bb2b811708843635db03a0ef36bf905b9ca82f0e}.
 
 \begin{figure}
-  \begin{center}
-    \includegraphics[width=1\columnwidth]{../photos/board/c1-intr}
-  \end{center}
+  \includegraphics[width=.99\columnwidth]{../photos/board/c1-intr}
   \caption{ \label{fig:c1-board-intr} La placa executant la prova de detecció de tecles per interrupció, després de prémer \texttt{C}. }
 \end{figure}
 

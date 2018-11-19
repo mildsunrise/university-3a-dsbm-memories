@@ -223,9 +223,7 @@ s'encen durant dos segons, i s'apaga). En la figura~\ref{fig:p2-board-backlight}
 pot veure la placa amb el backlight encès.
 
 \begin{figure}
-  \begin{center}
-    \includegraphics[width=1\columnwidth]{../photos/board/p2-backlight}
-  \end{center}
+  \includegraphics[width=.99\columnwidth]{../photos/board/p2-backlight}
   \caption{ \label{fig:p2-board-backlight} La placa amb el backlight encès. }
 \end{figure}
 
@@ -237,9 +235,7 @@ Com que l'LCD arrenca en mode 8~bits, cal fer una seqüència d'inicialització
 concreta per posar-lo en mode 4~bits i configurar les línies del display i la font.
 
 \begin{figure}
-  \begin{center}
-    \includegraphics[width=0.8\columnwidth]{../\projectname/lcd-init-protocol}
-  \end{center}
+  \includegraphics[width=0.8\columnwidth]{../\projectname/lcd-init-protocol}
   \caption{ \label{fig:p2-init-protocol} Passos d'inicialització de l'LCD en mode 4~bits. }
 \end{figure}
 
@@ -260,9 +256,7 @@ $\mathsf{R}/\overline{\mathsf{W}}$ està fixat sempre a 0 (escritura) i que les 
 \textsf{DB4} a \textsf{DB7} estan fixades també a 0.
 
 \begin{figure}
-  \begin{center}
-    \includegraphics[width=1\columnwidth]{../\projectname/timing-lcd-write}
-  \end{center}
+  \includegraphics[width=.99\columnwidth]{../\projectname/timing-lcd-write}
   \caption{ \label{fig:p2-timing-write} Cronograma d'una escriptura al LCD. }
 \end{figure}
 
@@ -309,9 +303,7 @@ de la inicialització en sí, \fname{LCD_Init} escriu aquests dos caràcters.
 El programa es carrega a la placa i s'obté el funcionament esperat (figura~\ref{fig:p2-board-init}).
 
 \begin{figure}
-  \begin{center}
-    \includegraphics[width=1\columnwidth]{../photos/board/p2-init}
-  \end{center}
+  \includegraphics[width=.99\columnwidth]{../photos/board/p2-init}
   \caption{ \label{fig:p2-board-init} La placa just després d'inicialitzar el LCD. }
 \end{figure}
 
@@ -392,9 +384,7 @@ El codi es carrega a la placa i es comprova que s'obté el funcionament esperat
 cursor actiu.
 
 \begin{figure}
-  \begin{center}
-    \includegraphics[width=1\columnwidth]{../photos/board/p2-hello}
-  \end{center}
+  \includegraphics[width=.99\columnwidth]{../photos/board/p2-hello}
   \caption{ \label{fig:p2-board-hello} La placa després d'escriure \texttt{Hello} a l'LCD només inicialitzar-se. }
 \end{figure}
 
@@ -548,9 +538,7 @@ i es modifica la primera crida a \fname{LCD_SendString} per fer-lo servir:
 \vskip -1em
 
 \begin{figure}
-  \begin{center}
-    \includegraphics[width=1\columnwidth]{../photos/board/p2-names}
-  \end{center}
+  \includegraphics[width=.99\columnwidth]{../photos/board/p2-names}
   \caption{ \label{fig:p2-board-names} La placa mostrant nom i cognom a les dues fileres de l'LCD i un caràcter especial. }
 \end{figure}
 
