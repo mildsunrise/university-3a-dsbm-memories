@@ -1,0 +1,338 @@
+\projectstart{r2}{R2}{Compartició d'elements comuns}
+
+\section{Objectius}
+
+En aquesta pràctica es vol fer una introducció a dues eines bàsiques
+de sincronització entre processos: els semàfors binaris i els mutexes.
+S'exposaran les utilitats i la forma d'us de cadascuna, i es treballarà
+sobre dos programes d'exemple per demostrar-ho.
+
+\section{Desenvolupament}
+
+
+\subsection{Introducció als Semàfors}
+
+S'explica la necessitat de protegir l'accés a elements comuns de forma que
+només hi pugui accedir un procés alhora. S'introdueixen els \emph{semàfors binaris}
+de ChibiOS/RT com a possible solució. Llavors s'explica l'us bàsic d'un semàfor.
+
+
+\subsection{Exemple d'ús de Semàfors}
+
+En primer lloc es demana importar al projecte els fitxers \filename{mutexes.c} i \filename{mutexes.h}
+i incloure el primer al \filename{Makefile}. Això es fa al \commit{99b853f483a6605d7cde3d9ae6dfabf453bb6a74}.
+
+Ara treballarem amb la funció \fname{semaphoreExample}. El programa és el següent:
+
+\begin{minted}{c}
+// Binary semaphore
+BinarySemaphore semaf;
+
+// Working area for the semaphore child thread
+static WORKING_AREA(waSem, 128);
+
+// Child thread function prototype
+static msg_t thSem(void *arg);
+
+// Process syncronization example that uses semaphores
+
+void semaphoreExample(void) {
+    // Global initialization
+    baseInit();
+
+    // Initializes the semaphore as not taken
+    chBSemInit(&semaf, FALSE);
+
+    // Creates a child thread
+    chThdCreateStatic(waSem, sizeof (waSem), NORMALPRIO + 1, thSem, NULL);
+
+    while (1) {
+        SLEEP_MS(300);          // Wait 300ms
+        chBSemSignal(&semaf);   // Send signal to child
+    }
+}
+
+
+// Child thread that changes the state of the orange LED
+// at each semaphore syncronization
+
+static msg_t thSem(void *arg) {
+    while (1) {
+        chBSemWait(&semaf);                 // Wait for syncronization
+        (LEDS_PORT->ODR) ^= ORANGE_LED_BIT; // Toggle LED
+    }
+
+    return 0;
+}
+\end{minted}
+\vskip -1em
+
+Com podem veure, el programa comença inicialitzant el sistema i el semàfor, i creant un nou procés fill.
+Fet això, es limita a alliberar el semàfor cada \SI{300}{\milli\second},
+
+Per altra banda, el procés fill intenta repetidament agafar el semàfor, i cada cop que això passa
+canvia l'estat del LED taronja~\ledpattern{ }{X}{ }{ }. En la primera iteració el podrà agafar inmediatament
+ja que inicialment està lliure, però en la segona quedarà bloquejat. Quan després de \SI{300}{\milli\second}
+el fil principal alliberi el semàfor, \fname{chBSemWait} el podrà tornar a agafar i es farà una iteració més.
+
+El resultat, doncs, és que el LED canvia d'estat constantment. La funció es crida des del \fname{main}
+i es comprova que el funcionament és l'esperat.
+
+Ara es demana, com a estudi previ, modificar el programa perquè creï un tercer procés \fname{thSem2}
+de la mateixa prioritat que \fname{thSem} i que estarà controlat per un segon semàfor \mintinline{c}|semaf2|
+i operarà sobre el LED blau~\ledpattern{ }{ }{ }{X}. Llavors, en comptes de desbloquejar el semàfor
+en el procés principal, es desbloquejarà cada dues iteracions de \fname{thSem}.
+
+%previ
+En primer lloc, es defineix i s'inicialitza el semàfor \mintinline{c}|semaf2|:
+
+\begin{minted}{diff}
+@@ -13,7 +13,7 @@
+ /******************* SEMAPHORE EXAMPLE ********************/
+ 
+ // Binary semaphores
+-BinarySemaphore semaf;
++BinarySemaphore semaf, semaf2;
+ 
+ // Working area for the semaphore child thread
+ static WORKING_AREA(waSem, 128);
+@@ -27,7 +28,8 @@ void semaphoreExample(void) {
+     baseInit();
+ 
+     // Initializes the semaphores as not taken
+     chBSemInit(&semaf, FALSE);
++    chBSemInit(&semaf2, FALSE);
+ 
+     // Creates a child thread
+     chThdCreateStatic(waSem, sizeof (waSem), NORMALPRIO + 1, thSem, NULL);
+\end{minted}
+\vskip -1em
+
+En segon lloc, fem una còpia de \fname{thSem} i la canviem perquè
+que controli el LED blau i esperi a \mintinline{c}|semaf2|:
+
+\begin{minted}{c}
+// Variation of the original thSem but controlling the blue LED
+// and synchronized on the second semaphore
+
+static msg_t thSem2(void *arg) {
+    while (1) {
+        chBSemWait(&semaf2);                // Wait for synchronization
+        (LEDS_PORT->ODR) ^= BLUE_LED_BIT;   // Toggle LED
+    }
+
+    return 0;
+}
+\end{minted}
+\vskip -1em
+
+En tercer lloc, només queda modificar \fname{thSem} perquè
+desbloquegi \mintinline{c}|semaf2| cada dos canvis de LED:
+
+\begin{minted}{diff}
+ static msg_t thSem(void *arg) {
++    uint32_t counter = 0;
+     while (1) {
+         chBSemWait(&semaf);                 // Wait for syncronization
+         (LEDS_PORT->ODR) ^= ORANGE_LED_BIT; // Toggle LED
+ 
++        counter++;
++        if ((counter % 2) == 0)             // Every two ticks
++            chBSemSignal(&semaf2);          // Send signal to other child
+     }
+ 
+     return 0;
+ }
+\end{minted}
+\vskip -1em
+
+I en últim lloc, només queda arrencar el segón procés a la funció
+principal (en el codi final, aquestes modificacions s'han fet sobre una
+còpia de la funció anomenada \fname{semaphoreTwoThreads}):
+
+\begin{minted}{diff}
+@@ -16,7 +16,8 @@
+ BinarySemaphore semaf, semaf2;
+ 
+ // Working area for the semaphore child threads
+ static WORKING_AREA(waSem, 128);
++static WORKING_AREA(waSem2, 128);
+ 
+ // Child thread function prototype
+ static msg_t thSem(void *arg);
+@@ -32,8 +32,9 @@ void semaphoreExample(void) {
+     chBSemInit(&semaf2, FALSE);
+ 
+     // Creates a child thread
+     chThdCreateStatic(waSem, sizeof (waSem), NORMALPRIO + 1, thSem, NULL);
++    chThdCreateStatic(waSem2, sizeof (waSem2), NORMALPRIO + 1, thSem2, NULL);
+ 
+     while (1) {
+         SLEEP_MS(300);          // Wait 300ms
+\end{minted}
+\vskip -1em
+%/previ
+
+Cridem el programa des del \fname{main} i el carreguem a la placa. El resultat
+és l'esperat: el LED blau fa un canvi d'estat cada dos canvis d'estat del LED
+taronja (per tant va la meitat de ràpid).
+Això conforma el \commit{81f976c6f794a8b2512e715932d0f71bd8745259}.
+
+
+\subsection{Control d'elements comuns mitjançant Mutexes}
+
+En aquesta segona part de la pràctica es vol introduir el concepte de \emph{mutexes}.
+
+Primer s'explica com sincronitzariem l'accés a un recurs comú (en el nostre cas, l'LCD)
+i per què són més recomanables els mutexes que els semàfors per a tasques com aquesta.
+Es parla dels \emph{deadlocks}, del fenòmen d'inversió de prioritat i de l'heretament
+de prioritat de què disposa ChibiOS/RT. S'explica el seu us més bàsic.
+
+
+\subsection{Exemple d'ús de Mutexes}
+
+Ara treballarem sobre la segona part del fitxer, que conté el següent programa
+d'exemple (funció \fname{mutexExample}):
+
+\begin{minted}{c}
+// Working area for the child thread
+static WORKING_AREA(waThEM, 128);
+
+// Child thread function prototype
+static msg_t thMtx(void *arg);
+
+// Test where two threads access to the LCD
+// The main thread write digits 0..9 on the first LCD line
+// The child thread write letters A..Z on the second LCD line
+
+void mutexExample(void) {
+    int32_t x, i, car;
+
+    // Global initialization
+    baseInit();
+
+    // Initialize the LCD
+    LCD_Init();
+
+    // Clear the LCD and turn off the backlight
+    LCD_ClearDisplay();
+    LCD_Backlight(0);
+
+    // Creates a child thread
+    chThdCreateStatic(waThEM, sizeof (waThEM), NORMALPRIO, thMtx, NULL);
+
+    // First digit to show
+    car = '0';
+
+    // Infinite loop
+    while (1) {
+        for (i = 0; i < 20; i++)    // 20 times for each digit
+            for (x = 0; x < LCD_COLUMNS; x++) { // For each column on the LCD...
+                LCD_GotoXY(x, 0);       // Jump to that column
+                LCD_SendChar(car);      // Write the digit
+                DELAY_US(17000);        // Some delay
+            }
+        if (++car > '9') car = '0'; // Go to next digit
+    }
+}
+
+// Child thread entry point
+// Write letters on the second row of the LCD
+
+static msg_t thMtx(void *arg) {
+    int32_t x, i, car;
+
+    // First char to show
+    car = 'A';
+
+    // Infinite loop
+    while (1) {
+        for (i = 0; i < 20; i++)    // 20 times for each char
+            for (x = 0; x < LCD_COLUMNS; x++) { // For each LCD column
+                LCD_GotoXY(x, 1);       // Jump to that column
+                LCD_SendChar(car);      // Write the char
+                DELAY_US2(10000);       // Some delay
+            }
+        if (++car > 'Z') car = 'A'; // Go to next char
+    }
+    return 0;
+}
+\end{minted}
+\vskip -1em
+
+Com podem veure, es tracta d'un programa que inicia un procés fill, i tots dos
+processos escriuen periòdicament dígits a diferents posicions de l'LCD.
+Com que fan servir \fname{DELAY_US} i no \fname{SLEEP_MS}, no cedeixen temps
+de CPU i l'scheduler va intercanviant entre un i l'altre (round-robin).
+
+Cridem \fname{mutexExample} des de \fname{main} i ho carreguem a la placa,
+i efectivament, l'accés concurrent a l'LCD acaba provocant glitches i
+finalment la pantalla falla completament.
+
+Per tant, volem arbitrar l'accés a l'LCD fent servir un mutex que tots
+dos processos hauran d'agafar abans de fer-lo servir, i alliberar-lo després.
+
+Es demana (estudi previ) implementar les modificacions al programa. Cal
+definir el mutex, inicialitzar-lo, i fer-lo servir en les dues àrees d'accés
+a l'LCD:
+
+%previ
+\begin{minted}{diff}
+@@ -90,6 +90,9 @@ void semaphoreTwoThreads(void) {
+ 
+ /************************ MUTEX EXAMPLE *******************************/
+ 
++// Mutex protecting LCD access
++static Mutex mutex;
++
+ // Working area for the child thread
+ static WORKING_AREA(waThEM, 128);
+ 
+@@ -113,6 +116,9 @@ void mutexExample(void) {
+     LCD_ClearDisplay();
+     LCD_Backlight(0);
+ 
++    // Initialize the mutex
++    chMtxInit(&mutex);
++
+     // Creates a child thread
+     chThdCreateStatic(waThEM, sizeof (waThEM), NORMALPRIO, thMtx, NULL);
+ 
+@@ -123,8 +129,10 @@ void mutexExample(void) {
+     while (1) {
+         for (i = 0; i < 20; i++)    // 20 times for each digit
+             for (x = 0; x < LCD_COLUMNS; x++) { // For each column on the LCD...
++                chMtxLock(&mutex);      // LOCK the LCD mutex
+                 LCD_GotoXY(x, 0);       // Jump to that column
+                 LCD_SendChar(car);      // Write the digit
++                chMtxUnlock();          // UNLOCK the LCD mutex
+                 DELAY_US(17000);        // Some delay
+             }
+         if (++car > '9') car = '0'; // Go to next digit
+@@ -144,8 +152,10 @@ static msg_t thMtx(void *arg) {
+     while (1) {
+         for (i = 0; i < 20; i++)    // 20 times for each char
+             for (x = 0; x < LCD_COLUMNS; x++) { // For each LCD column
++                chMtxLock(&mutex);      // LOCK the LCD mutex
+                 LCD_GotoXY(x, 1);       // Jump to that column
+                 LCD_SendChar(car);      // Write the char
++                chMtxUnlock();          // UNLOCK the LCD mutex
+                 DELAY_US2(10000);       // Some delay
+             }
+         if (++car > 'Z') car = 'A'; // Go to next char
+\end{minted}
+\vskip -1em
+%/previ
+
+Es carrega a la placa de nou, i comprovem que ara ja no apareixen glitches
+a l'LCD. Això conforma el \commit{d1253453f176e8d3ca27002cd4cf1314c6677577}.
+
+
+\section{Conclusió}
+
+Aquesta pràctica s'ha realitzat sense problemes.
+
+\section{Ajustaments posteriors}
+
+Cap canvi a destacar.
+% TODO
