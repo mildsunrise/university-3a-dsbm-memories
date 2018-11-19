@@ -31,7 +31,7 @@ Es compila el projecte i es verifica que s'ha generat el fitxer \filename{build/
 \subsection{Càrrega del projecte a la RAM de la placa}
 
 El projecte exemple que es dona conté un codi a \filename{main.c} que només encen
-i apaga contínuament el LED verd de la placa.
+i apaga contínuament el LED verd~\ledpattern{X}{ }{ }{ } de la placa.
 
 \begin{minted}{c}
 #include "Base.h"     // Basic definitions
@@ -125,11 +125,12 @@ Ara es demana, com a exercici bàsic, que es modifiqui \filename{main.c} per afe
 \fname{ledSequence} que encengui els LEDs seguint la seqüència següent de manera repetiva, deixant
 \SI{0.5}{\second} entre estat i estat:
 
-\begin{center}
+\begin{center} \Large
 \ledpattern{X}{ }{ }{ } $\rightarrow$
 \ledpattern{ }{X}{ }{ } $\rightarrow$
 \ledpattern{ }{ }{X}{ } $\rightarrow$
-\ledpattern{ }{ }{ }{X}
+\ledpattern{ }{ }{ }{X} $\rightarrow$
+\ledpattern{X}{ }{ }{ } $\rightarrow \hdots$
 \end{center}
 
 La funció s'implementa com segueix:
