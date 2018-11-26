@@ -196,18 +196,18 @@ Aquests també es reprodueixen en la memòria (marcant-ho on pertoqui).
   \renewcommand{\projectname}{#1}
   \input{../#1/main.tex}
 }
-\newcommand{\projectstart}[3]{ \chapter{\label{ch:#1} Pràctica #2 -- #3} }
+\newcommand{\projectstart}[3]{ \chapter{Pràctica #2 -- #3} \label{ch:#1} }
 
-\part{\label{part:p-p} Pràctiques bàsiques}
+\part{Pràctiques bàsiques} \label{part:p-p}
 \inputproject{P1}
 \inputproject{P2}
 \inputproject{P3}
 \inputproject{P4}
 
-\part{\label{part:p-c} Pràctiques complementàries}
+\part{Pràctiques complementàries} \label{part:p-c}
 \inputproject{C1}
 
-\part{\label{part:p-r} Pràctiques amb RTOS}
+\part{Pràctiques amb RTOS} \label{part:p-r}
 \inputproject{R1}
 \inputproject{R2}
 
