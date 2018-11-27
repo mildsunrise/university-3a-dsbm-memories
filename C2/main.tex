@@ -165,9 +165,8 @@ associada al número de canal del potenciòmetre:
 \end{minted}
 \vskip -1em
 
-S'ha seguit la nomenclatura de ChibiOS, que ja defineix \mintinline{c}|ADC_CHANNEL_VREFINT|
+S'ha seguit la nomenclatura de ChibiOS, que ja defineix les constants \mintinline{c}|ADC_CHANNEL_VREFINT|
 i \mintinline{c}|ADC_CHANNEL_SENSOR|.
-
 %previ
 Un cop definida la funció \fname{readChannel} i la constant,
 només cal cridar \mintinline{c}|readChannel(ADC_CHANNEL_POT)|
@@ -216,7 +215,7 @@ Es carrega el programa a la placa, i es verifica el seu correcte funcionament.
 El resultat es pot veure a les figures \ref{fig:c2-board-pot-mid}, \ref{fig:c2-board-pot-zero}
 i \ref{fig:c2-board-pot-full}, que mostren la lectura amb el potenciòmetre en tres posicions diferents.
 
-\begin{figure}
+\begin{figure}[bh]
   \includegraphics[width=.99\columnwidth]{../photos/board/c2-pot-mid}
   \caption{ \label{fig:c2-board-pot-mid} La placa mostrant el valor del potenciòmetre, a meitat de recorregut. }
 \end{figure}
@@ -233,6 +232,7 @@ i \ref{fig:c2-board-pot-full}, que mostren la lectura amb el potenciòmetre en t
 Això conforma el \commit{385cc48ae416f2609f8624fec38a5e76584e7f03}.
 
 
+\clearpage
 \subsection{Lectura de la temperatura del microcontrolador}
 
 Ara es llegirà el canal IN16, que és intern i es troba connectat al

@@ -315,6 +315,16 @@ escriptures (0010 1***) configuren les línies i el tipus de caràcters que té 
 el codi està escrivint 1000 0010, que és una comanda \emph{Set DDRAM address} i situa el cursor en la posició
 2 de la DDRAM.
 
+\begin{figure}
+  \includegraphics[width=.99\columnwidth]{../photos/board/analyzer-glitched}
+  \caption{ \label{fig:p4-board-glitched} Exemple d'inicialització incorrecta de l'LCD. }
+\end{figure}
+
+Això explica que aleatòriament, l'LCD «s'inicialitzés» com a una sola línia (figura~\ref{fig:p4-board-glitched}).
+En realitat el que estava passant és que la inicialització no es feia, i la font i el
+nombre de línies era aleatori. Per tant cridar \fname{LCD_Init} no feia res, era necessari
+un reset.
+
 Anem al codi i corregim el bug (\commit{d6babe86f524c875e7b5d9e93cf336c434c1b18c}):
 
 \begin{minted}{diff}
